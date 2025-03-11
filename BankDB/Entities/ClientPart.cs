@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bank.Data.Entities
+namespace Bank.Datas.Entities
 {
     public class ClientPart : Client
     {

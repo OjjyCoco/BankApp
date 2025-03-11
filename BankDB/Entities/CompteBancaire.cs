@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bank.Data.Entities
+namespace Bank.Datas.Entities
 {
     public class CompteBancaire
     {
@@ -15,7 +15,7 @@ namespace Bank.Data.Entities
 
         public DateTime DateOuverture { get; set; }
 
-        public decimal Solde { get; set; } = 1000.00m;
+        public double Solde { get; set; } = 1000.00;
 
         [ForeignKey("Client")]
         public int ClientId { get; set; }

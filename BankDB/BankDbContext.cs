@@ -1,8 +1,8 @@
-﻿using Bank.Data.Entities;
+﻿using Bank.Datas.Entities;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace Bank.Data
+namespace Bank.Datas
 {
     public class BankDbContext : DbContext
     {
@@ -116,6 +116,42 @@ namespace Bank.Data
                     VilleSiege = "PARIS"
                 });
 
+            modelBuilder.Entity<ClientPro>().HasData(
+                new ClientPro
+                {
+                    Id = 8,
+                    Nom = "ZARA",
+                    Adresse = "23, av P.Valery",
+                    Complement = "",
+                    CodePostal = "92100",
+                    Ville = "LA DEFENSE",
+                    Mail = "info@zara.fr",
+                    Siret = "65895874587854",
+                    StatutJuridique = "SA",
+                    AdresseSiege = "24, esplanade de la Défense",
+                    ComplementSiege = "Tour Franklin",
+                    CodePostalSiege = "92060",
+                    VilleSiege = "LA DEFENSE"
+                });
+
+            modelBuilder.Entity<ClientPro>().HasData(
+                new ClientPro
+                {
+                    Id = 10,
+                    Nom = "LEONIDAS",
+                    Adresse = "15, Place de la Bastille",
+                    Complement = "Fond de Cour",
+                    CodePostal = "75003",
+                    Ville = "PARIS",
+                    Mail = "contact@leonidas.fr",
+                    Siret = "91235987456832",
+                    StatutJuridique = "SAS",
+                    AdresseSiege = "10, rue de la Paix",
+                    ComplementSiege = "Tour Franklin",
+                    CodePostalSiege = "75008",
+                    VilleSiege = "PARIS"
+                });
+
             modelBuilder.Entity<ClientPart>().HasData(
                 new ClientPart
                 {
@@ -176,12 +212,42 @@ namespace Bank.Data
                     DateNaissance = new DateTime(1977, 04, 12)
                 });
 
+            modelBuilder.Entity<ClientPart>().HasData(
+                new ClientPart
+                {
+                    Id = 9,
+                    Nom = "BENSAID",
+                    Adresse = "3, avenue des Parcs",
+                    Complement = "",
+                    Ville = "ROISSY EN France",
+                    CodePostal = "93500",
+                    Mail = "bensaid@gmail.com",
+                    Prenom = "Georgia",
+                    Sexe = 'F',
+                    DateNaissance = new DateTime(1976, 04, 16)
+                });
+
+            modelBuilder.Entity<ClientPart>().HasData(
+                new ClientPart
+                {
+                    Id = 11,
+                    Nom = "ABABOU",
+                    Adresse = "3, rue Lecourbe",
+                    Complement = "",
+                    Ville = "BAGNOLET",
+                    CodePostal = "93200",
+                    Mail = "ababou@gmail.com",
+                    Prenom = "Teddy",
+                    Sexe = 'M',
+                    DateNaissance = new DateTime(1970, 10, 10)
+                });
+
             modelBuilder.Entity<CompteBancaire>().HasData(
                 new CompteBancaire
                 {
                     NumCompte = "151DZ247Z",
                     DateOuverture = new DateTime(2005, 05, 10),
-                    Solde = 25680.50m,
+                    Solde = 25680.50,
                     ClientId = 1
                 });
 
@@ -190,14 +256,14 @@ namespace Bank.Data
                 {
                     NumCompte = "354SE553A",
                     DateOuverture = new DateTime(1989, 04, 22),
-                    Solde = 725621684.60m,
+                    Solde = 725621684.60,
                     ClientId = 2
                 });
 
             modelBuilder.Entity<CarteBancaire>().HasData(
                 new CarteBancaire
                 {
-                    NumCarte = "3654 0745 0573 4369",
+                    NumCarte = "3654074505734369",
                     DateExpiration = new DateTime(2030, 01, 04),
                     NumCompte = "151DZ247Z"
                 });
@@ -205,7 +271,7 @@ namespace Bank.Data
             modelBuilder.Entity<CarteBancaire>().HasData(
                 new CarteBancaire
                 {
-                    NumCarte = "4974 0185 0223 4445",
+                    NumCarte = "4974018502234445",
                     DateExpiration = new DateTime(2027, 06, 13),
                     NumCompte = "354SE553A"
                 });
@@ -213,10 +279,22 @@ namespace Bank.Data
             modelBuilder.Entity<CarteBancaire>().HasData(
                 new CarteBancaire
                 {
-                    NumCarte = "6884 7875 3056 1463",
+                    NumCarte = "6884787530561463",
                     DateExpiration = new DateTime(2028, 03, 24),
                     NumCompte = "354SE553A"
                 });
+
+            //modelBuilder.Entity<Operation>().HasData(
+            //    new Operation
+            //    {
+            //        Id = 1,
+            //        NumCarte = "6884787530561463",
+            //        Montant = 4588.15,
+            //        Type = "RetraitDAB",
+            //        Date = new DateTime(2024, 03, 24),
+            //        Devise = "devise", 
+            //        NumCompte = "354SE553A"
+            //    });
 
         }
     }
