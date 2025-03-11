@@ -16,7 +16,7 @@ namespace OperationGenerator
     {
         public string NumCarte { get; set; }
         public double Montant { get; set; }
-        public OperationType OperationType { get; set; }
+        public string Type { get; set; }
         public DateTime Date { get; set; }
         public string Devise { get; set; }
         public decimal TauxDeChange { get; set; }

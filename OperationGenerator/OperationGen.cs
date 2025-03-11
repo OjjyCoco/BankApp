@@ -1,6 +1,7 @@
 ﻿using Azure;
 using OperationGenerator.APIs;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Transactions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -23,7 +24,6 @@ namespace OperationGenerator
             GenererCsv(operations);
             operations = await VerifyTransactionsFromCsv($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\operations-{date.DayOfYear}.csv");
             await AjoutTauxChange(operations);
-            Console.WriteLine("testttttt");
             GenerateDailyJson(operations);
         }
         
@@ -39,12 +39,11 @@ namespace OperationGenerator
                 string cardNumber = baseCardNumber + random.Next(1000, 1042).ToString();
                 if (i % 2 == 0 && !IsValidLuhn(cardNumber))
                     continue;
-
                 operations.Add(new Operation
                 {
                     NumCarte = cardNumber,
                     Montant = random.Next(100, 10000),
-                    OperationType = (OperationType)random.Next(Enum.GetValues(typeof(OperationType)).Length),
+                    Type = GetOperationString((OperationType)random.Next(Enum.GetValues(typeof(OperationType)).Length)),
                     Date = DateTime.Now,
                     Devise = codes[random.Next(codes.Count) - 1]   
                 });
@@ -52,6 +51,36 @@ namespace OperationGenerator
                 i++;
             }
             return operations;
+        }
+
+        static string GetOperationString(OperationType operation)
+        {
+            switch (operation)
+            {
+                case OperationType.RetraitDAB:
+                    return "RetraitDAB";
+                case OperationType.FactureCB:
+                    return "FactureCB";
+                case OperationType.DepotGuichet:
+                    return "DepotGuichet";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        static OperationType GetTypeToOperationType(string type)
+        {
+            switch (type)
+            {
+                case "RetraitDAB":
+                    return OperationType.RetraitDAB;
+                case "FactureCB" :
+                    return OperationType.FactureCB;
+                case "DepotGuichet":
+                    return OperationType.DepotGuichet;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
         public static bool IsValidLuhn(string number)
         {
@@ -81,7 +110,7 @@ namespace OperationGenerator
                 writer.WriteLine("NumCarte,Montant,OperationType,Date,Devise");
                 foreach (var operation in operations)
                 {
-                    writer.WriteLine($"{operation.NumCarte},{operation.Montant},{operation.OperationType},{operation.Date:yyyy-MM-dd HH:mm:ss},{operation.Devise}");
+                    writer.WriteLine($"{operation.NumCarte},{operation.Montant},{operation.Type},{operation.Date:yyyy-MM-dd HH:mm:ss},{operation.Devise}");
                 }
             }
         }
@@ -103,6 +132,15 @@ namespace OperationGenerator
                     var values = line.Split(',');
 
                     string cardNumber = values[0];
+                    try
+                    {
+                        OperationType oType = GetTypeToOperationType(values[2]);
+                    }
+                    catch 
+                    {
+                        invalidTransactions.Add(line);
+                        continue;
+                    }
                     if (values.Length < 5 || !IsValidLuhn(cardNumber) || !codes.Contains(values[4]))
                     {
                         invalidTransactions.Add(line);
@@ -113,7 +151,7 @@ namespace OperationGenerator
                         {
                             NumCarte = values[0],
                             Montant = double.Parse(values[1]),
-                            OperationType = Enum.Parse<OperationType>(values[2]),
+                            Type = values[2],
                             Date = DateTime.Parse(values[3]),
                             Devise = values[4]
                         });
