@@ -1,7 +1,9 @@
-﻿using OperationGenerator.APIs;
+﻿using Azure;
+using OperationGenerator.APIs;
 using System.Text.Json;
 using System.Transactions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace OperationGenerator
 {
@@ -9,6 +11,7 @@ namespace OperationGenerator
     public class OperationGen
     {
         const string baseCardNumber = "497401850223";
+       
 
 
         static async Task Main()
@@ -18,10 +21,10 @@ namespace OperationGenerator
 
             List<Operation> operations = await GenererOperations(10);
             GenererCsv(operations);
-            operations = VerifyTransactionsFromCsv($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\operations-{date.DayOfYear}.csv");
-           // await AjoutTauxChange(operations);
-            //Console.WriteLine("testttttt");
-           // GenerateDailyJson(operations);
+            operations = await VerifyTransactionsFromCsv($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\operations-{date.DayOfYear}.csv");
+            await AjoutTauxChange(operations);
+            Console.WriteLine("testttttt");
+            GenerateDailyJson(operations);
         }
         
 
@@ -83,11 +86,12 @@ namespace OperationGenerator
             }
         }
 
-        public static List<Operation> VerifyTransactionsFromCsv(string filePath)
+        public static async Task<List<Operation>> VerifyTransactionsFromCsv(string filePath)
         {
             DateTime date;
             date = DateTime.Now;
             var invalidTransactions = new List<string>();
+            List<string> codes = await ExchangeRateAPI.ObtenirCodesDevises();
             List<Operation> operations = new List<Operation> { };
 
             using (var reader = new StreamReader(filePath))
@@ -99,7 +103,7 @@ namespace OperationGenerator
                     var values = line.Split(',');
 
                     string cardNumber = values[0];
-                    if (values.Length < 5 || !IsValidLuhn(cardNumber))
+                    if (values.Length < 5 || !IsValidLuhn(cardNumber) || !codes.Contains(values[4]))
                     {
                         invalidTransactions.Add(line);
                     }
@@ -132,27 +136,29 @@ namespace OperationGenerator
 
         static async Task AjoutTauxChange(List<Operation> operations)
         {
+            if (operations.Count == 0)
+                return;
+
+            List<string> devises = new List<string>();
+
             foreach (var operation in operations)
-            {
-                if (operation.Devise.ToString() != "EUR")
-                {
-                    operation.TauxDeChange = await GetTauxChange(operation.Devise.ToString());
-                }
-            }
-            
+                devises.Add(operation.Devise);
+
+            Dictionary<string, decimal> tauxDevises = await ExchangeRateAPI.ObtenirTauxChange(devises, operations[0].Date);
+
+            foreach (var item in tauxDevises)
+                operations.First(o => o.Devise == item.Key).TauxDeChange = item.Value;                 
         }
 
-        public static async Task<double> GetTauxChange(string currency)
-        {
-            // Simulation d'un taux de change (à remplacer par une API externe si nécessaire)
-            var rates = new Dictionary<string, double> { { "USD", 1.1 }, { "GBP", 0.85 }, { "JPY", 160.80} };
-            return rates.ContainsKey(currency) ? rates[currency] : 1.0;
-        }
+        
+        
 
         static void GenerateDailyJson(List<Operation> operations)
         {
+            DateTime date;
+            date = DateTime.Now;
             string json = JsonSerializer.Serialize(operations, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText("C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\transactions.json", json);
+            File.WriteAllText($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\transactions-{date.DayOfYear}.json", json);
         }
     }
 }

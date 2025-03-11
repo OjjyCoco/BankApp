@@ -19,7 +19,7 @@ namespace OperationGenerator
         public OperationType OperationType { get; set; }
         public DateTime Date { get; set; }
         public string Devise { get; set; }
-        public double TauxDeChange { get; set; }
+        public decimal TauxDeChange { get; set; }
 
         
     }
