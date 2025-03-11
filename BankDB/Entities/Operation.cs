@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Bank.Data.Entities
+namespace Bank.Datas.Entities
 {
     public class Operation
     {
@@ -16,14 +16,16 @@ namespace Bank.Data.Entities
 
         public string Type { get; set; }
 
+        public string NumCarte { get; set; }
+
         public double Montant { get; set; }
 
         public string Devise { get; set; }
 
         public DateTime Date { get; set; }
 
-        [ForeignKey("CarteBancaire")]
-        public string NumCarte { get; set; }
-        public CarteBancaire CarteBancaire { get; set; }
+        [ForeignKey("CompteBancaire")]
+        public string NumCompte { get; set; }
+        public CompteBancaire CompteBancaire { get; set; }
     }
 }
