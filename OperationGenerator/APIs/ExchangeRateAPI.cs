@@ -71,7 +71,7 @@ namespace OperationGenerator.APIs
                         else
                         {
                             Console.WriteLine($"Clé {key} non trouvée dans les taux.");
-                            tauxDevises.Add(devise, 0);
+                            tauxDevises.Add(devise, 1);
                         }
                     }
                     return tauxDevises;

@@ -1,12 +1,12 @@
-﻿using Azure;
-using OperationGenerator.APIs;
+﻿using OperationGenerator.APIs;
+using OperationGenerator.Entities;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Transactions;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace OperationGenerator
+namespace OperationGenerator.Programmes
 {
    
     public class OperationGen
@@ -24,6 +24,17 @@ namespace OperationGenerator
             GenererCsv(operations);
             operations = await VerifyTransactionsFromCsv($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\operations-{date.DayOfYear}.csv");
             await AjoutTauxChange(operations);
+            using (var context = new OperationDbContext())
+            {
+                foreach(var op in operations)
+                {
+                    Console.WriteLine($"CardId: {op.NumCarte}, TauxChange: {op.TauxDeChange}");
+                    context.Operations.Add(op); // Ajout à la base
+                    context.SaveChanges(); // Enregistrer dans la DB
+                }
+                
+            }
+           
             GenerateDailyJson(operations);
         }
         
@@ -97,7 +108,7 @@ namespace OperationGenerator
                 sum += digit;
                 alternate = !alternate;
             }
-            return (sum % 10 == 0);
+            return sum % 10 == 0;
         }
 
         static void GenererCsv(List<Operation> operations)
