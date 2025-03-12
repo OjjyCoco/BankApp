@@ -195,7 +195,19 @@ namespace OperationGenerator
         {
             DateTime date;
             date = DateTime.Now;
-            string json = JsonSerializer.Serialize(operations, new JsonSerializerOptions { WriteIndented = true });
+            List<OperationJson> opjList = new List<OperationJson>();
+            foreach (var op in operations)
+            {
+                opjList.Add(new OperationJson
+                {
+                    NumCarte = op.NumCarte,
+                    Date = op.Date,
+                    Montant = op.Montant / (double)op.TauxDeChange,
+                    Type = op.Type
+                });
+                
+            }
+            string json = JsonSerializer.Serialize(opjList, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\transactions-{date.DayOfYear}.json", json);
         }
     }
