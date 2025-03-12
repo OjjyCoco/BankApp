@@ -6,9 +6,9 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace OperationGenerator.APIs
+namespace DailyOperationChecker.APIs
 {
-    class ExchangeRateAPI
+    public class ExchangeRateAPI
     {
         const string apiKey = "e7b5edbe21c14dab8632fe4d";
         const string hostApiKey = "514b07ba3297e36d6affaa7e5c2a738a";
