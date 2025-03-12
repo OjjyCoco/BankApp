@@ -20,7 +20,7 @@ namespace OperationGenerator.Programmes
             DateTime date;
             date = DateTime.Now;
 
-            List<Operation> operations = await GenererOperations(10);
+            List<Operation> operations = await GenererOperations(10); 
             GenererCsv(operations);
             operations = await VerifyTransactionsFromCsv($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\operations-{date.DayOfYear}.csv");
             await AjoutTauxChange(operations);
@@ -58,7 +58,7 @@ namespace OperationGenerator.Programmes
                     Date = DateTime.Now,
                     Devise = codes[random.Next(codes.Count) - 1]   
                 });
-
+                await Task.Delay(3000);
                 i++;
             }
             return operations;
@@ -168,13 +168,26 @@ namespace OperationGenerator.Programmes
                         });
                     }
                 }
+                var doublons = operations
+                    .GroupBy(o => new { o.NumCarte, o.Date })
+                    .Where(w => w.Count() > 1)
+                    .SelectMany(w => w)
+                    .ToList();
+
+                if (doublons.Any())
+                    foreach (var d in doublons)
+                    {
+                        invalidTransactions.Add($"{d.NumCarte},{d.Montant},{d.Type},{d.Date},{d.Devise}");
+                        operations.Remove(d);
+                    }
+                
                 
             }
 
             if (invalidTransactions.Count > 0)
             {
-                File.WriteAllLines($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\invalid_transactions-{date.DayOfYear}.csv", invalidTransactions);
-                Console.WriteLine("Des transactions invalides ont été détectées et enregistrées dans invalid_transactions.csv");
+                File.WriteAllLines($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\invalid_operations-{date.DayOfYear}.csv", invalidTransactions);
+                Console.WriteLine("Des transactions invalides ont été détectées et enregistrées dans invalid_operations.csv");
             }
             else
             {
@@ -219,7 +232,7 @@ namespace OperationGenerator.Programmes
                 
             }
             string json = JsonSerializer.Serialize(opjList, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\transactions-{date.DayOfYear}.json", json);
+            File.WriteAllText($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\OperationGenerator\\Transactions\\operations-{date.DayOfYear}.json", json);
         }
     }
 }
