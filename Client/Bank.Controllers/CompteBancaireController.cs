@@ -5,17 +5,17 @@ using Bank.Views;
 using Bank.Datas.Repositories;
 using Bank.Datas.Entities;
 
-namespace Recap.Controllers
+namespace Bank.Controllers
 {
     public class CompteBancaireController
     {
         private readonly CompteBancaireRepository _repo;
         private readonly CompteBancaireView _view;
 
-        public CompteBancaireController(CompteBancaireRepository repo, CompteBancaireView view)
+        public CompteBancaireController()
         {
-            _repo = repo;
-            _view = view;
+            _repo = new CompteBancaireRepository();
+            _view = new CompteBancaireView();
         }
 
         public async Task AfficherTousLesComptes()
@@ -37,6 +37,13 @@ namespace Recap.Controllers
                 Console.WriteLine($"Compte {numCompte} supprimé !");
             else
                 Console.WriteLine($"Compte {numCompte} introuvable !");
+        }
+
+        public async Task<List<CompteBancaire>> GetComptesByClient(int clientId)
+        {
+            var comptes = await _repo.GetComptesByClient(clientId);
+            return comptes;
+            //_view.AfficherComptes(comptes);
         }
     }
 }
