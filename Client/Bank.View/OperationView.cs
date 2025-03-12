@@ -8,27 +8,26 @@ namespace Bank.Views
     {
         public void AfficherOperations(List<Operation> operations)
         {
-            Console.WriteLine("\nListe des opérations :");
+            Console.WriteLine("\n╔══════════╦════════════╦═════════════╦═══════════════╦════════════════╗");
+            Console.WriteLine("║   ID     ║   Carte    ║    Type     ║    Montant    ║      Date      ║");
+            Console.WriteLine("╠══════════╬════════════╬═════════════╬═══════════════╬════════════════╣");
+
             foreach (var op in operations)
             {
-                Console.WriteLine($"ID: {op.Id} | Carte: {op.NumCarte} | Type: {op.Type} | Montant: {op.Montant} euros | Date: {op.Date}");
+                string numCarteMasque = MasquerNumCarte(op.NumCarte);
+                string montantFormate = op.Montant.ToString("0.00"); // Tronque à 2 décimales
+
+                Console.WriteLine($"║ {op.Id,-8} ║ {numCarteMasque,-10} ║ {op.Type,-11} ║ {montantFormate,-13}e║ {op.Date:dd/MM/yyyy} ║");
             }
+
+            Console.WriteLine("╚══════════╩════════════╩═════════════╩═══════════════╩════════════════╝");
         }
 
-        public void AfficherOperationDetails(Operation operation)
+        private string MasquerNumCarte(string numCarte)
         {
-            if (operation == null)
-            {
-                Console.WriteLine("Opération introuvable !");
-                return;
-            }
-
-            Console.WriteLine("\nDétails de l'opération :");
-            Console.WriteLine($"ID: {operation.Id}");
-            Console.WriteLine($"Carte: {operation.NumCarte}");
-            Console.WriteLine($"Type: {operation.Type}");
-            Console.WriteLine($"Montant: {operation.Montant} €");
-            Console.WriteLine($"Date: {operation.Date}");
+            return numCarte.Length == 16 ? "********" + numCarte[^4..] : "Numéro invalide";
         }
+
+
     }
 }
