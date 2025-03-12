@@ -11,7 +11,6 @@ using Bank.Datas.Entities;
 using Bank.Views;
 using Bank.Datas.Repositories;
 
-
 namespace Bank.Controllers
 {
     public class OperationController
@@ -19,12 +18,14 @@ namespace Bank.Controllers
         private readonly OperationRepository _operationRepo;
         private readonly OperationView _operationView;
         private readonly CarteBancaireRepository _carteRepo;
+        private readonly CompteBancaireRepository _compteRepo;
 
         public OperationController()
         {
             _operationRepo = new OperationRepository();
             _operationView = new OperationView();
             _carteRepo = new CarteBancaireRepository();
+            _compteRepo = new CompteBancaireRepository();
         }
 
         public async Task AfficherToutesLesOperations()
@@ -50,17 +51,6 @@ namespace Bank.Controllers
             _operationView.AfficherOperations(operations);
         }
 
-        public async Task AfficherOperationParId(int id)
-        {
-            var operation = await _operationRepo.GetById(id);
-            _operationView.AfficherOperationDetails(operation);
-        }
-
-        public async Task AjouterOperation(Operation op)
-        {
-            bool success = await _operationRepo.Ajouter(op);
-            Console.WriteLine(success ? "Opération ajoutée avec succès !" : "Échec de l'ajout de l'opération.");
-        }
 
         public async Task ImporterOperationsDepuisJson(string filePath)
         {
@@ -95,7 +85,11 @@ namespace Bank.Controllers
                             NumCompte = carte.NumCompte
                         };
 
-                        await _operationRepo.Ajouter(operation);
+                        bool ajoutOk = await _operationRepo.Ajouter(operation);
+                        if (ajoutOk)
+                        {
+                            await MettreAJourSoldeCompte(operation);
+                        }
                     }
                     Console.WriteLine("Importation réussie des opérations depuis le fichier JSON.");
                 }
@@ -110,10 +104,36 @@ namespace Bank.Controllers
             }
         }
 
-
-        public async Task ExporterOperationsPdf(string filePath)
+        private async Task MettreAJourSoldeCompte(Operation operation)
         {
-            var operations = await _operationRepo.GetAll();
+            var compte = await _compteRepo.GetByNumCompte(operation.NumCompte);
+            if (compte == null)
+            {
+                Console.WriteLine($"Compte {operation.NumCompte} introuvable, impossible de mettre à jour le solde.");
+                return;
+            }
+
+            if (operation.Type == "FactureCB" || operation.Type == "RetraitDAB")
+            {
+                compte.Solde -= operation.Montant;
+            }
+            else if (operation.Type == "DepotGuichet")
+            {
+                compte.Solde += operation.Montant;
+            }
+            else
+            {
+                Console.WriteLine($"Type d'opération non reconnu : {operation.Type}");
+                return;
+            }
+
+            bool success = await _compteRepo.MettreAJourSolde(compte);
+            Console.WriteLine(success ? $"Solde mis à jour : {compte.Solde}€" : "Erreur lors de la mise à jour du solde.");
+        }
+
+        public async Task ExporterOperationsPdf(string filePath, string NumCompte)
+        {
+            var operations = await _operationRepo.GetByNumCompte(NumCompte);
             if (operations.Count == 0)
             {
                 Console.WriteLine("Aucune opération à exporter !");
@@ -122,21 +142,68 @@ namespace Bank.Controllers
 
             using (FileStream fs = new FileStream(filePath, FileMode.Create))
             {
-                Document document = new Document();
+                Document document = new Document(PageSize.A4, 25, 25, 30, 30);
                 PdfWriter.GetInstance(document, fs);
                 document.Open();
-                document.Add(new Paragraph("Liste des opérations bancaires"));
 
+                // Ajout d'un titre stylisé
+                Font titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16);
+                Paragraph title = new Paragraph($"Relevé des opérations - Compte {NumCompte}", titleFont);
+                title.Alignment = Element.ALIGN_CENTER;
+                title.SpacingAfter = 20;
+                document.Add(title);
+
+                // Création du tableau avec colonnes
+                PdfPTable table = new PdfPTable(4);
+                table.WidthPercentage = 100;
+                table.SetWidths(new float[] { 15f, 30f, 25f, 30f }); // Largeur relative des colonnes
+
+                // Définition des styles d'en-tête
+                Font headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
+                PdfPCell cell;
+
+                // Ajout des en-têtes
+                string[] headers = { "ID", "Numéro Carte", "Montant (€)", "Date et Type" };
+                foreach (string header in headers)
+                {
+                    cell = new PdfPCell(new Phrase(header, headerFont));
+                    cell.BackgroundColor = new BaseColor(230, 230, 230); // Gris clair
+                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
+                    cell.Padding = 5;
+                    table.AddCell(cell);
+                }
+
+                // Style pour le contenu
+                Font contentFont = FontFactory.GetFont(FontFactory.HELVETICA, 10);
+
+                // Ajout des opérations
                 foreach (var op in operations)
                 {
-                    document.Add(new Paragraph($"ID: {op.Id}, Montant: {op.Montant}, Date: {op.Date}, Type: {op.Type}"));
+                    string numCarteMasque = MasquerNumCarte(op.NumCarte);
+
+                    table.AddCell(new PdfPCell(new Phrase(op.Id.ToString(), contentFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
+                    table.AddCell(new PdfPCell(new Phrase(numCarteMasque, contentFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
+                    table.AddCell(new PdfPCell(new Phrase($"{op.Montant:F2} €", contentFont)) { HorizontalAlignment = Element.ALIGN_RIGHT });
+                    table.AddCell(new PdfPCell(new Phrase($"{op.Date:dd/MM/yyyy} - {op.Type}", contentFont)) { HorizontalAlignment = Element.ALIGN_CENTER });
                 }
-                
+
+                document.Add(table);
                 document.Close();
             }
 
             Console.WriteLine("Fichier PDF généré avec succès.");
         }
+
+        // Méthode pour masquer les 4 derniers chiffres du num de catre
+        private string MasquerNumCarte(string numCarte)
+        {
+            if (numCarte.Length == 16)
+            {
+                return "**** **** **** " + numCarte.Substring(12, 4);
+            }
+            return "Numéro invalide";
+        }
+
 
         public async Task ExporterOperationsXml(string filePath)
         {
@@ -186,8 +253,5 @@ namespace Bank.Controllers
             public string Type { get; set; }
             public DateTime Date { get; set; }
         }
-
-
-
     }
 }

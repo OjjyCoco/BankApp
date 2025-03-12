@@ -24,19 +24,10 @@ namespace Bank.Controllers
             _view.AfficherComptes(comptes);
         }
 
-        public async Task AjouterCompte(CompteBancaire compte)
+        public async Task AfficherDetailsNumCompte(string numCompte)
         {
-            await _repo.Add(compte);
-            Console.WriteLine($"Compte {compte.NumCompte} ajouté !");
-        }
-
-        public async Task SupprimerCompte(int numCompte)
-        {
-            var result = await _repo.Remove(numCompte);
-            if (result)
-                Console.WriteLine($"Compte {numCompte} supprimé !");
-            else
-                Console.WriteLine($"Compte {numCompte} introuvable !");
+            var compte = await _repo.GetByNumCompte(numCompte);
+            _view.AfficherDetailsCompte(compte);
         }
 
         public async Task<List<CompteBancaire>> GetComptesByClient(int clientId)
