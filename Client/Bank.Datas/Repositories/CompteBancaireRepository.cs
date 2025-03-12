@@ -49,5 +49,13 @@ namespace Bank.Datas.Repositories
             await context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<List<CompteBancaire>> GetComptesByClient(int clientId)
+        {
+            using var context = new BankDbContext();
+            return await context.CompteBancaires
+                                .Where(c => c.ClientId == clientId)
+                                .ToListAsync();
+        }
     }
 }

@@ -38,6 +38,14 @@ namespace Bank.Datas.Repositories
                                 .FirstOrDefaultAsync(op => op.Id == id);
         }
 
+        public async Task<List<Operation>> GetByNumCompte(string numCompte)
+        {
+            using var context = new BankDbContext();
+            return await context.Operations
+                                .Where(op => op.NumCompte == numCompte)
+                                .ToListAsync();
+        }
+
         public async Task<bool> Ajouter(Operation op)
         {
             using var context = new BankDbContext();
