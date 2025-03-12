@@ -1,0 +1,42 @@
+[
+  {
+    "NumCarte": "4974018502231018",
+    "Montant": 4975,
+    "Type": "DepotGuichet",
+    "Date": "2025-03-11T19:06:12",
+    "Devise": "PHP",
+    "TauxDeChange": 62.844315
+  },
+  {
+    "NumCarte": "4974018502231000",
+    "Montant": 5693,
+    "Type": "FactureCB",
+    "Date": "2025-03-11T19:06:12",
+    "Devise": "BND",
+    "TauxDeChange": 1.456872
+  },
+  {
+    "NumCarte": "4974018502231000",
+    "Montant": 3941,
+    "Type": "DepotGuichet",
+    "Date": "2025-03-11T19:06:12",
+    "Devise": "FJD",
+    "TauxDeChange": 2.516186
+  },
+  {
+    "NumCarte": "4974018502231026",
+    "Montant": 7322,
+    "Type": "FactureCB",
+    "Date": "2025-03-11T19:06:12",
+    "Devise": "XPF",
+    "TauxDeChange": 120.441044
+  },
+  {
+    "NumCarte": "4974018502231034",
+    "Montant": 5066,
+    "Type": "RetraitDAB",
+    "Date": "2025-03-11T19:06:12",
+    "Devise": "KYD",
+    "TauxDeChange": 0.903272
+  }
+]
