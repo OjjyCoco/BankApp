@@ -46,6 +46,24 @@ namespace Bank.Datas.Repositories
                                 .ToListAsync();
         }
 
+        public async Task<List<Operation>> GetByNumCompte(string numCompte, int mois)
+        {
+            using var context = new BankDbContext();
+            return await context.Operations
+                                .Where(op => op.NumCompte == numCompte && op.Date.Month == mois)
+                                .ToListAsync();
+        }
+
+        public async Task<List<Operation>> GetByNumCompte(string numCompte, int mois, int annee)
+        {
+            using var context = new BankDbContext();
+            return await context.Operations
+                                .Where(op => op.NumCompte == numCompte && op.Date.Year == annee && op.Date.Month == mois)
+                                .ToListAsync();
+        }
+
+
+
         public async Task<bool> Ajouter(Operation op)
         {
             using var context = new BankDbContext();
