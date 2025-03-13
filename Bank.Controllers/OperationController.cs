@@ -132,7 +132,7 @@ namespace Bank.Controllers
             }
 
             bool success = await _compteRepo.MettreAJourSolde(compte);
-            Console.WriteLine(success ? $"Solde mis à jour : {compte.Solde}€" : "Erreur lors de la mise à jour du solde.");
+            Console.WriteLine(success ? $"Solde mis à jour : {compte.Solde.ToString("0.00")} euros" : "Erreur lors de la mise à jour du solde.");
         }
 
         public async Task ExporterOperationsPdf(string NumCompte, int mois, int annee)

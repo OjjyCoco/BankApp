@@ -8,26 +8,25 @@ namespace Bank.Views
     {
         public void AfficherOperations(List<Operation> operations)
         {
-            Console.WriteLine("\n╔══════════╦════════════╦═════════════╦═══════════════╦════════════════╗");
-            Console.WriteLine("║   ID     ║   Carte    ║    Type     ║    Montant    ║      Date      ║");
-            Console.WriteLine("╠══════════╬════════════╬═════════════╬═══════════════╬════════════════╣");
+            Console.WriteLine("\n===== Liste des opérations =====\n");
 
             foreach (var op in operations)
             {
                 string numCarteMasque = MasquerNumCarte(op.NumCarte);
-                string montantFormate = op.Montant.ToString("0.00"); // Tronque à 2 décimales
+                string montantFormate = op.Montant.ToString("0.00"); // Format montant avec 2 décimales
 
-                Console.WriteLine($"║ {op.Id,-8} ║ {numCarteMasque,-10} ║ {op.Type,-11} ║ {montantFormate,-13}e║ {op.Date:dd/MM/yyyy} ║");
+                Console.WriteLine($"ID: {op.Id}");
+                Console.WriteLine($"Carte: {numCarteMasque}");
+                Console.WriteLine($"Type: {op.Type}");
+                Console.WriteLine($"Montant: {montantFormate} euros");
+                Console.WriteLine($"Date: {op.Date:dd/MM/yyyy}");
+                Console.WriteLine(new string('-', 30)); // Ligne de séparation
             }
-
-            Console.WriteLine("╚══════════╩════════════╩═════════════╩═══════════════╩════════════════╝");
         }
 
         private string MasquerNumCarte(string numCarte)
         {
-            return numCarte.Length == 16 ? "********" + numCarte[^4..] : "Numéro invalide";
+            return (numCarte?.Length == 16) ? "********" + numCarte[^4..] : "XXXXXXXXXX";
         }
-
-
     }
 }

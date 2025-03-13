@@ -26,7 +26,7 @@ namespace Bank.Views
                 return;
             }
             Console.WriteLine($"Numéro: {compte.NumCompte}");
-            Console.WriteLine($"Solde: {compte.Solde} euros");
+            Console.WriteLine($"Solde: {compte.Solde.ToString("0.00")} euros");
             Console.WriteLine($"Date d'ouverture: {compte.DateOuverture.ToShortDateString()}");
         }
     }
