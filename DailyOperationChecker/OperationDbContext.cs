@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OperationGenerator.Entities;
+using DailyOperationChecker.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OperationGenerator
+namespace DailyOperationChecker
 {
     public class OperationDbContext : DbContext
     {
