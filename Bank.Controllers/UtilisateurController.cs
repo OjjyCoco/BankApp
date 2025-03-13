@@ -1,21 +1,26 @@
-﻿using Recap.Datas.Repositories;
-using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Recap.Datas.Repositories;
+using Bank.Datas.Entities;
 
-namespace Client.Menu
+namespace Bank.Controllers
 {
-    public class AuthService
+    public class UtilisateurController
     {
         private readonly UtilisateurRepository _userRepo;
 
-        public AuthService()
+        public UtilisateurController()
         {
             _userRepo = new UtilisateurRepository();
         }
 
+        public async Task<Utilisateur?> GetByLogin(string login)
+        {
+            return await _userRepo.GetByLogin(login);
+        }
+
         public async Task<(bool, int?)> Authentifier(string login, string password)
         {
-            var user = await _userRepo.GetByLogin(login);
+            var user = await GetByLogin(login);
             if (user == null)
             {
                 Console.WriteLine("Utilisateur introuvable.");

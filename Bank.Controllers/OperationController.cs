@@ -111,6 +111,7 @@ namespace Bank.Controllers
         private async Task MettreAJourSoldeCompte(Operation operation)
         {
             var compte = await _compteRepo.GetByNumCompte(operation.NumCompte);
+            double ancienSolde = compte.Solde;
             if (compte == null)
             {
                 Console.WriteLine($"Compte {operation.NumCompte} introuvable, impossible de mettre à jour le solde.");
@@ -119,7 +120,16 @@ namespace Bank.Controllers
 
             if (operation.Type == "FactureCB" || operation.Type == "RetraitDAB")
             {
-                compte.Solde -= operation.Montant;
+                if (compte.Solde >= operation.Montant)
+                {
+                    compte.Solde -= operation.Montant;
+                }
+                else
+                {
+                    Console.WriteLine("-- Opération rejetée --");
+                    Console.WriteLine($"Solde insuffisant pour effectuer {operation.Type} sur compte numéro {compte.NumCompte}.\nOpération annulée, base de donnée pas mise à jour. \n");
+                    return;
+                }
             }
             else if (operation.Type == "DepotGuichet")
             {
@@ -132,8 +142,12 @@ namespace Bank.Controllers
             }
 
             bool success = await _compteRepo.MettreAJourSolde(compte);
-            Console.WriteLine(success ? $"Solde mis à jour : {compte.Solde.ToString("0.00")} euros" : "Erreur lors de la mise à jour du solde.");
+            Console.WriteLine("-- Nouvelle opération --");
+            Console.WriteLine(success ? $"Solde du compte numéro {compte.NumCompte} mis à jour après {operation.Type} d'un montant de {operation.Montant:0.00} euro(s)" +
+                $" \n Ancien solde : {ancienSolde}  \n Nouveau solde : {compte.Solde:0.00} euros \n" : "Erreur lors de la mise à jour du solde. \n");
+
         }
+
 
         public async Task ExporterOperationsPdf(string NumCompte, int mois, int annee)
         {
@@ -147,7 +161,7 @@ namespace Bank.Controllers
                 return;
             }
 
-            using (FileStream fs = new FileStream($"C:\\Users\\yohan\\Documents\\POEIHN\\ProjetNET\\operations-{moisNom}-{annee}.pdf", FileMode.Create))
+            using (FileStream fs = new FileStream($"C:\\Users\\natha\\source\\repos\\BankApp2\\operations-{moisNom}-{annee}.pdf", FileMode.Create))
             {
                 Document document = new Document(PageSize.A4, 25, 25, 30, 30);
                 PdfWriter.GetInstance(document, fs);

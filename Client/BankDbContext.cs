@@ -257,8 +257,7 @@ namespace Bank.Datas
                 new CompteBancaire
                 {
                     NumCompte = "151DZ247Z",
-                    DateOuverture = new DateTime(2005, 05, 10),
-                    Solde = 25680.50,
+                    DateOuverture = new DateTime(2005, 05, 10),                    
                     ClientId = 1
                 });
 
@@ -267,7 +266,14 @@ namespace Bank.Datas
                 {
                     NumCompte = "354SE553A",
                     DateOuverture = new DateTime(1989, 04, 22),
-                    Solde = 725621684.60,
+                    ClientId = 2
+                });
+
+            modelBuilder.Entity<CompteBancaire>().HasData(
+                new CompteBancaire
+                {
+                    NumCompte = "354SE553B",
+                    DateOuverture = new DateTime(1989, 07, 22),
                     ClientId = 2
                 });
 
@@ -279,6 +285,13 @@ namespace Bank.Datas
                     NumCompte = "151DZ247Z"
                 });
 
+            modelBuilder.Entity<CarteBancaire>().HasData(
+                new CarteBancaire
+                {
+                    NumCarte = "4974018502231026",
+                    DateExpiration = new DateTime(2030, 01, 04),
+                    NumCompte = "354SE553B"
+                });
             modelBuilder.Entity<CarteBancaire>().HasData(
                 new CarteBancaire
                 {

@@ -54,9 +54,7 @@ namespace DailyOperationChecker
                         continue;
                     }
                     if (values.Length < 5 || !IsValidLuhn(cardNumber) || !codes.Contains(values[4]))
-                    {
                         invalidTransactions.Add(line);
-                    }
                     else
                     {
                         operations.Add(new Operation
@@ -81,8 +79,6 @@ namespace DailyOperationChecker
                         invalidTransactions.Add($"{d.NumCarte},{d.Montant},{d.Type},{d.Date},{d.Devise}");
                         operations.Remove(d);
                     }
-
-
             }
 
             if (invalidTransactions.Count > 0)

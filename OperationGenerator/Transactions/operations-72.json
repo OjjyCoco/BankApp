@@ -1,7 +1,7 @@
 [
   {
     "NumCarte": "4974018502231026",
-    "Montant": 931.440602346757,
+    "Montant": 900.440602346757,
     "Type": "RetraitDAB",
     "Date": "2025-03-13T11:14:43"
   },
@@ -13,15 +13,21 @@
   },
   {
     "NumCarte": "4974018502231026",
-    "Montant": 1.867774358701078,
+    "Montant": 1000,
     "Type": "FactureCB",
     "Date": "2025-03-13T11:14:55"
   },
   {
     "NumCarte": "4974018502231000",
-    "Montant": 4.373989403051668,
+    "Montant": 1009,
     "Type": "DepotGuichet",
     "Date": "2025-03-13T11:15:01"
+  },
+  {
+    "NumCarte": "4974018502231026",
+    "Montant": 1000,
+    "Type": "DepotGuichet",
+    "Date": "2025-03-13T11:16:55"
   },
   {
     "NumCarte": "4974018502231018",

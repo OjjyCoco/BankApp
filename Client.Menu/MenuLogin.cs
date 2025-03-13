@@ -5,7 +5,6 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Bank.Controllers;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Client.Menu
 {
@@ -17,7 +16,7 @@ namespace Client.Menu
             // On importe les opérations si besoin
             await ImporterOperationsSiNecessaire();
 
-            var authService = new AuthService();
+            var userController = new UtilisateurController();
             bool authentifie = false;
             int? clientId = null;
 
@@ -31,7 +30,7 @@ namespace Client.Menu
                 Console.Write("Mot de passe: ");
                 string? password = LireMotDePasseCache();
 
-                var (isAuthenticated, id) = await authService.Authentifier(login, password);
+                var (isAuthenticated, id) = await userController.Authentifier(login, password);
                 authentifie = isAuthenticated;
                 clientId = id;
 
@@ -200,7 +199,7 @@ namespace Client.Menu
                 if (File.Exists(fichierAImporter))
                 {
                     await operationController.ImporterOperationsDepuisJson(fichierAImporter);
-                  
+
                     // Mettre à jour le fichier de suivi après chaque import réussi
                     await File.WriteAllTextAsync(lastFetchFile, jour.ToString());
                     Console.WriteLine($"Opérations du jour {jour} importées avec succès.");
