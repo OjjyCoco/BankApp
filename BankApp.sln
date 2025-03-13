@@ -11,13 +11,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OperationGenerator", "Opera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DailyOperationChecker", "DailyOperationChecker\DailyOperationChecker.csproj", "{0A6EC868-ACF0-4A8F-8B57-278AB17C6B48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Menu", "..\..\..\Downloads\BankApp2\BankApp2 - Copie\Client.Menu\Client.Menu.csproj", "{B615F950-F742-7405-F3F8-A7FFAA58605F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client.Menu", "Client.Menu\Client.Menu.csproj", "{B615F950-F742-7405-F3F8-A7FFAA58605F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank.Datas", "..\..\..\Downloads\BankApp2\BankApp2 - Copie\Client\Bank.Datas.csproj", "{3E4328B7-6F3A-2BAB-EBDC-ECC05E4A783A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank.Datas", "Client\Bank.Datas.csproj", "{3E4328B7-6F3A-2BAB-EBDC-ECC05E4A783A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank.Controllers", "..\..\..\Downloads\BankApp2\BankApp2 - Copie\Bank.Controllers\Bank.Controllers.csproj", "{37D07708-0C50-694B-69B0-5C620BDA6E37}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank.Controllers", "Bank.Controllers\Bank.Controllers.csproj", "{37D07708-0C50-694B-69B0-5C620BDA6E37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank.Views", "..\..\..\Downloads\BankApp2\BankApp2 - Copie\Bank.Views\Bank.Views.csproj", "{DA8E8241-4523-8EB3-D889-460299B76A04}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bank.Views", "Bank.Views\Bank.Views.csproj", "{DA8E8241-4523-8EB3-D889-460299B76A04}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "JsonFiles", "JsonFiles", "{7FBDE66E-3F6D-4A0D-BEED-31747177E9C6}"
 	ProjectSection(SolutionItems) = preProject

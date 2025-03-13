@@ -26,7 +26,7 @@ namespace Bank.Datas.Repositories
             return await context.CompteBancaires.ToListAsync();
         }
 
-        public async Task<CompteBancaire?> GetById(string numCompte)
+        public async Task<CompteBancaire?> GetByNumCompte(string numCompte)
         {
             using var context = new BankDbContext();
             return await context.CompteBancaires.SingleOrDefaultAsync(c => c.NumCompte == numCompte);
@@ -46,6 +46,25 @@ namespace Bank.Datas.Repositories
             if (compte == null) return false;
 
             context.CompteBancaires.Remove(compte);
+            await context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<List<CompteBancaire>> GetComptesByClient(int clientId)
+        {
+            using var context = new BankDbContext();
+            return await context.CompteBancaires
+                                .Where(c => c.ClientId == clientId)
+                                .ToListAsync();
+        }
+
+        public async Task<bool> MettreAJourSolde(CompteBancaire compte)
+        {
+            using var context = new BankDbContext();
+            var compteDb = await context.CompteBancaires.SingleOrDefaultAsync(c => c.NumCompte == compte.NumCompte);
+            if (compteDb == null) return false;
+
+            compteDb.Solde = compte.Solde;
             await context.SaveChangesAsync();
             return true;
         }
