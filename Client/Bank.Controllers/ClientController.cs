@@ -24,10 +24,5 @@ namespace Bank.Controllers
             _view.AfficherClients(clients);
         }
 
-        public async Task AjouterClient(Client client)
-        {
-            await _repo.Add(client);
-            Console.WriteLine($"Client {client.Nom} ajouté !");
-        }
     }
 }

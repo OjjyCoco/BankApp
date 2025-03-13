@@ -10,6 +10,7 @@ using iTextSharp.text.pdf;
 using Bank.Datas.Entities;
 using Bank.Views;
 using Bank.Datas.Repositories;
+using System.Globalization;
 
 namespace Bank.Controllers
 {
@@ -76,6 +77,7 @@ namespace Bank.Controllers
                             continue;
                         }
 
+                        // on créer une nouvelle opération
                         var operation = new Operation
                         {
                             NumCarte = jsonOp.NumCarte,
@@ -85,6 +87,7 @@ namespace Bank.Controllers
                             NumCompte = carte.NumCompte
                         };
 
+                        // on l'ajoute à la base de données
                         bool ajoutOk = await _operationRepo.Ajouter(operation);
                         if (ajoutOk)
                         {
@@ -104,6 +107,7 @@ namespace Bank.Controllers
             }
         }
 
+        // Méthode pour mettre à jour le solde du compte après qu'une opération a été ajoutée dans ImporterOperationsDepuisJson
         private async Task MettreAJourSoldeCompte(Operation operation)
         {
             var compte = await _compteRepo.GetByNumCompte(operation.NumCompte);
@@ -131,24 +135,27 @@ namespace Bank.Controllers
             Console.WriteLine(success ? $"Solde mis à jour : {compte.Solde}€" : "Erreur lors de la mise à jour du solde.");
         }
 
-        public async Task ExporterOperationsPdf(string filePath, string NumCompte)
+        public async Task ExporterOperationsPdf(string NumCompte, int mois, int annee)
         {
-            var operations = await _operationRepo.GetByNumCompte(NumCompte);
+            CultureInfo cultureFr = new CultureInfo("fr-FR");
+            string moisNom = cultureFr.DateTimeFormat.GetMonthName(mois);
+
+            var operations = await _operationRepo.GetByNumCompte(NumCompte, mois, annee);
             if (operations.Count == 0)
             {
-                Console.WriteLine("Aucune opération à exporter !");
+                Console.WriteLine("Aucune opération à exporter pour cette période !");
                 return;
             }
 
-            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+            using (FileStream fs = new FileStream($"C:\\Users\\natha\\source\\repos\\BankApp2\\operations-{moisNom}-{annee}.pdf", FileMode.Create))
             {
                 Document document = new Document(PageSize.A4, 25, 25, 30, 30);
                 PdfWriter.GetInstance(document, fs);
                 document.Open();
 
-                // Ajout d'un titre stylisé
+                // Ajout d'un titre
                 Font titleFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 16);
-                Paragraph title = new Paragraph($"Relevé des opérations - Compte {NumCompte}", titleFont);
+                Paragraph title = new Paragraph($"Relevé des opérations - Compte {NumCompte} - Mois de {moisNom} {annee}", titleFont);
                 title.Alignment = Element.ALIGN_CENTER;
                 title.SpacingAfter = 20;
                 document.Add(title);
@@ -162,7 +169,7 @@ namespace Bank.Controllers
                 Font headerFont = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 12);
                 PdfPCell cell;
 
-                // Ajout des en-têtes
+                // Ajout en-têtes
                 string[] headers = { "ID", "Numéro Carte", "Montant (€)", "Date et Type" };
                 foreach (string header in headers)
                 {
@@ -176,7 +183,7 @@ namespace Bank.Controllers
                 // Style pour le contenu
                 Font contentFont = FontFactory.GetFont(FontFactory.HELVETICA, 10);
 
-                // Ajout des opérations
+                // Ajout des oprations
                 foreach (var op in operations)
                 {
                     string numCarteMasque = MasquerNumCarte(op.NumCarte);
@@ -204,54 +211,5 @@ namespace Bank.Controllers
             return "Numéro invalide";
         }
 
-
-        public async Task ExporterOperationsXml(string filePath)
-        {
-            var operations = await _operationRepo.GetAll();
-            if (operations.Count == 0)
-            {
-                Console.WriteLine("Aucune opération à exporter !");
-                return;
-            }
-
-            var xmlSerializer = new XmlSerializer(typeof(List<OperationExport>));
-            var operationsExport = new List<OperationExport>();
-
-            foreach (var op in operations)
-            {
-                operationsExport.Add(new OperationExport
-                {
-                    Id = op.Id,
-                    Montant = op.Montant,
-                    Date = op.Date,
-                    Type = op.Type,
-                    NumCompte = "XXXX-XXXX-XXXX-" + op.NumCompte.Substring(op.NumCompte.Length - 4) // Masquer une partie du numéro de compte
-                });
-            }
-
-            using (TextWriter writer = new StreamWriter(filePath, false, Encoding.UTF8))
-            {
-                xmlSerializer.Serialize(writer, operationsExport);
-            }
-
-            Console.WriteLine("Fichier XML généré avec succès.");
-        }
-
-        public class OperationExport
-        {
-            public int Id { get; set; }
-            public double Montant { get; set; }
-            public DateTime Date { get; set; }
-            public string Type { get; set; }
-            public string NumCompte { get; set; } // Masqué
-        }
-
-        public class JsonOperation
-        {
-            public string NumCarte { get; set; }
-            public double Montant { get; set; }
-            public string Type { get; set; }
-            public DateTime Date { get; set; }
-        }
     }
 }
